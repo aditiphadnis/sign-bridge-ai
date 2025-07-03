@@ -29,104 +29,253 @@ interface Avatar3DProps {
   onAnimationComplete?: () => void;
 }
 
-// Simple 3D Avatar Component
+// Realistic Female Avatar Component for Sign Language
 function Avatar({ isAnimating }: { isAnimating: boolean }) {
   const groupRef = useRef<THREE.Group>(null);
+  const leftArmRef = useRef<THREE.Group>(null);
+  const rightArmRef = useRef<THREE.Group>(null);
+  const leftHandRef = useRef<THREE.Group>(null);
+  const rightHandRef = useRef<THREE.Group>(null);
   const [currentPose, setCurrentPose] = useState(0);
 
-  // Animation poses for sign language (simplified)
+  // More realistic sign language poses
   const poses = [
-    { leftArm: 0, rightArm: 0, leftHand: 0, rightHand: 0 },
     {
-      leftArm: Math.PI / 4,
-      rightArm: -Math.PI / 4,
-      leftHand: 0.2,
-      rightHand: -0.2,
+      leftArm: [0, 0, 0],
+      rightArm: [0, 0, 0],
+      leftHand: [0, 0, 0],
+      rightHand: [0, 0, 0],
+      description: "Rest position",
     },
     {
-      leftArm: Math.PI / 2,
-      rightArm: -Math.PI / 2,
-      leftHand: 0.5,
-      rightHand: -0.5,
+      leftArm: [0.2, 0, 0.3],
+      rightArm: [0.2, 0, -0.3],
+      leftHand: [0, 0, 0.2],
+      rightHand: [0, 0, -0.2],
+      description: "Hello gesture",
     },
     {
-      leftArm: Math.PI / 6,
-      rightArm: -Math.PI / 6,
-      leftHand: 0.1,
-      rightHand: -0.1,
+      leftArm: [1.2, 0, 0.8],
+      rightArm: [1.2, 0, -0.8],
+      leftHand: [0.3, 0, 0],
+      rightHand: [0.3, 0, 0],
+      description: "Thank you",
+    },
+    {
+      leftArm: [0.8, 0, 0.6],
+      rightArm: [0.6, 0, -0.4],
+      leftHand: [0.1, 0, 0.1],
+      rightHand: [0.1, 0, -0.1],
+      description: "Help gesture",
     },
   ];
 
   useFrame((state) => {
-    if (groupRef.current && isAnimating) {
-      // Animate through poses
-      const time = state.clock.getElapsedTime();
-      const poseIndex = Math.floor(time * 0.5) % poses.length;
-      setCurrentPose(poseIndex);
+    if (groupRef.current) {
+      if (isAnimating) {
+        // Animate through poses
+        const time = state.clock.getElapsedTime();
+        const poseIndex = Math.floor(time * 0.7) % poses.length;
+        setCurrentPose(poseIndex);
 
-      // Apply smooth transitions
-      groupRef.current.rotation.y = Math.sin(time * 0.3) * 0.1;
+        // Smooth transition between poses
+        const pose = poses[poseIndex];
+
+        if (leftArmRef.current) {
+          leftArmRef.current.rotation.x = pose.leftArm[0];
+          leftArmRef.current.rotation.y = pose.leftArm[1];
+          leftArmRef.current.rotation.z = pose.leftArm[2];
+        }
+
+        if (rightArmRef.current) {
+          rightArmRef.current.rotation.x = pose.rightArm[0];
+          rightArmRef.current.rotation.y = pose.rightArm[1];
+          rightArmRef.current.rotation.z = pose.rightArm[2];
+        }
+
+        if (leftHandRef.current) {
+          leftHandRef.current.rotation.x = pose.leftHand[0];
+          leftHandRef.current.rotation.y = pose.leftHand[1];
+          leftHandRef.current.rotation.z = pose.leftHand[2];
+        }
+
+        if (rightHandRef.current) {
+          rightHandRef.current.rotation.x = pose.rightHand[0];
+          rightHandRef.current.rotation.y = pose.rightHand[1];
+          rightHandRef.current.rotation.z = pose.rightHand[2];
+        }
+
+        // Subtle body movement
+        groupRef.current.rotation.y = Math.sin(time * 0.3) * 0.05;
+        groupRef.current.position.y = Math.sin(time * 2) * 0.02 - 1;
+      }
     }
   });
 
-  const pose = poses[currentPose];
-
   return (
     <group ref={groupRef} position={[0, -1, 0]}>
-      {/* Head */}
-      <Sphere args={[0.3]} position={[0, 1.5, 0]}>
-        <meshStandardMaterial color="#FFB6A3" />
-      </Sphere>
+      {/* Head - More realistic proportions */}
+      <group position={[0, 1.6, 0]}>
+        {/* Face */}
+        <Sphere args={[0.25, 16, 16]} position={[0, 0, 0]}>
+          <meshStandardMaterial color="#F4C2A1" roughness={0.3} />
+        </Sphere>
 
-      {/* Eyes */}
-      <Sphere args={[0.05]} position={[-0.1, 1.6, 0.25]}>
-        <meshStandardMaterial color="#000" />
-      </Sphere>
-      <Sphere args={[0.05]} position={[0.1, 1.6, 0.25]}>
-        <meshStandardMaterial color="#000" />
-      </Sphere>
+        {/* Hair - Dark brown */}
+        <Sphere args={[0.28, 16, 16]} position={[0, 0.05, -0.05]}>
+          <meshStandardMaterial color="#2C1810" roughness={0.8} />
+        </Sphere>
 
-      {/* Body */}
-      <Cylinder args={[0.2, 0.25, 0.8]} position={[0, 0.8, 0]}>
-        <meshStandardMaterial color="#4A90E2" />
+        {/* Headband - White/Light */}
+        <Cylinder
+          args={[0.26, 0.26, 0.08]}
+          position={[0, 0.15, 0]}
+          rotation={[Math.PI / 2, 0, 0]}
+        >
+          <meshStandardMaterial color="#F8F8F8" roughness={0.2} />
+        </Cylinder>
+
+        {/* Eyes */}
+        <Sphere args={[0.04]} position={[-0.08, 0.05, 0.2]}>
+          <meshStandardMaterial color="#FFF" />
+        </Sphere>
+        <Sphere args={[0.04]} position={[0.08, 0.05, 0.2]}>
+          <meshStandardMaterial color="#FFF" />
+        </Sphere>
+
+        {/* Pupils */}
+        <Sphere args={[0.02]} position={[-0.08, 0.05, 0.22]}>
+          <meshStandardMaterial color="#2C1810" />
+        </Sphere>
+        <Sphere args={[0.02]} position={[0.08, 0.05, 0.22]}>
+          <meshStandardMaterial color="#2C1810" />
+        </Sphere>
+
+        {/* Nose */}
+        <Sphere args={[0.02]} position={[0, 0, 0.22]}>
+          <meshStandardMaterial color="#E8A688" />
+        </Sphere>
+
+        {/* Smile */}
+        <Cylinder args={[0.08, 0.08, 0.01]} position={[0, -0.08, 0.22]}>
+          <meshStandardMaterial color="#D67B7B" />
+        </Cylinder>
+      </group>
+
+      {/* Neck */}
+      <Cylinder args={[0.08, 0.1, 0.15]} position={[0, 1.3, 0]}>
+        <meshStandardMaterial color="#F4C2A1" />
       </Cylinder>
 
-      {/* Left Arm */}
-      <group position={[-0.3, 1.2, 0]} rotation={[0, 0, pose.leftArm]}>
-        <Cylinder args={[0.08, 0.08, 0.6]} position={[0, -0.3, 0]}>
-          <meshStandardMaterial color="#FFB6A3" />
+      {/* Body - Green top */}
+      <group position={[0, 0.9, 0]}>
+        <Cylinder args={[0.15, 0.2, 0.6]} position={[0, 0, 0]}>
+          <meshStandardMaterial color="#2D8B3F" roughness={0.7} />
         </Cylinder>
-        {/* Left Hand */}
-        <Sphere
-          args={[0.12]}
-          position={[0, -0.7, 0]}
-          rotation={[0, 0, pose.leftHand]}
-        >
-          <meshStandardMaterial color="#FFB6A3" />
+
+        {/* Shirt details */}
+        <Sphere args={[0.025]} position={[0, 0.1, 0.18]}>
+          <meshStandardMaterial color="#1F5F2F" />
         </Sphere>
+        <Sphere args={[0.025]} position={[0, -0.1, 0.18]}>
+          <meshStandardMaterial color="#1F5F2F" />
+        </Sphere>
+      </group>
+
+      {/* Left Arm */}
+      <group ref={leftArmRef} position={[-0.25, 1.15, 0]}>
+        {/* Upper arm */}
+        <Cylinder args={[0.06, 0.08, 0.4]} position={[0, -0.2, 0]}>
+          <meshStandardMaterial color="#2D8B3F" />
+        </Cylinder>
+
+        {/* Forearm */}
+        <group position={[0, -0.45, 0]}>
+          <Cylinder args={[0.05, 0.06, 0.35]} position={[0, -0.175, 0]}>
+            <meshStandardMaterial color="#F4C2A1" />
+          </Cylinder>
+
+          {/* Left Hand */}
+          <group ref={leftHandRef} position={[0, -0.4, 0]}>
+            <Sphere args={[0.08]} position={[0, 0, 0]}>
+              <meshStandardMaterial color="#F4C2A1" />
+            </Sphere>
+            {/* Fingers */}
+            <Cylinder
+              args={[0.015, 0.015, 0.1]}
+              position={[0, -0.05, 0.06]}
+              rotation={[0.3, 0, 0]}
+            >
+              <meshStandardMaterial color="#F4C2A1" />
+            </Cylinder>
+            <Cylinder
+              args={[0.015, 0.015, 0.1]}
+              position={[0.03, -0.05, 0.05]}
+              rotation={[0.2, 0.3, 0]}
+            >
+              <meshStandardMaterial color="#F4C2A1" />
+            </Cylinder>
+            <Cylinder
+              args={[0.015, 0.015, 0.1]}
+              position={[-0.03, -0.05, 0.05]}
+              rotation={[0.2, -0.3, 0]}
+            >
+              <meshStandardMaterial color="#F4C2A1" />
+            </Cylinder>
+          </group>
+        </group>
       </group>
 
       {/* Right Arm */}
-      <group position={[0.3, 1.2, 0]} rotation={[0, 0, pose.rightArm]}>
-        <Cylinder args={[0.08, 0.08, 0.6]} position={[0, -0.3, 0]}>
-          <meshStandardMaterial color="#FFB6A3" />
+      <group ref={rightArmRef} position={[0.25, 1.15, 0]}>
+        {/* Upper arm */}
+        <Cylinder args={[0.06, 0.08, 0.4]} position={[0, -0.2, 0]}>
+          <meshStandardMaterial color="#2D8B3F" />
         </Cylinder>
-        {/* Right Hand */}
-        <Sphere
-          args={[0.12]}
-          position={[0, -0.7, 0]}
-          rotation={[0, 0, pose.rightHand]}
-        >
-          <meshStandardMaterial color="#FFB6A3" />
-        </Sphere>
+
+        {/* Forearm */}
+        <group position={[0, -0.45, 0]}>
+          <Cylinder args={[0.05, 0.06, 0.35]} position={[0, -0.175, 0]}>
+            <meshStandardMaterial color="#F4C2A1" />
+          </Cylinder>
+
+          {/* Right Hand */}
+          <group ref={rightHandRef} position={[0, -0.4, 0]}>
+            <Sphere args={[0.08]} position={[0, 0, 0]}>
+              <meshStandardMaterial color="#F4C2A1" />
+            </Sphere>
+            {/* Fingers */}
+            <Cylinder
+              args={[0.015, 0.015, 0.1]}
+              position={[0, -0.05, 0.06]}
+              rotation={[0.3, 0, 0]}
+            >
+              <meshStandardMaterial color="#F4C2A1" />
+            </Cylinder>
+            <Cylinder
+              args={[0.015, 0.015, 0.1]}
+              position={[0.03, -0.05, 0.05]}
+              rotation={[0.2, 0.3, 0]}
+            >
+              <meshStandardMaterial color="#F4C2A1" />
+            </Cylinder>
+            <Cylinder
+              args={[0.015, 0.015, 0.1]}
+              position={[-0.03, -0.05, 0.05]}
+              rotation={[0.2, -0.3, 0]}
+            >
+              <meshStandardMaterial color="#F4C2A1" />
+            </Cylinder>
+          </group>
+        </group>
       </group>
 
-      {/* Legs */}
-      <Cylinder args={[0.1, 0.1, 0.7]} position={[-0.15, 0, 0]}>
-        <meshStandardMaterial color="#2E4057" />
+      {/* Legs - Hidden below torso, just for completeness */}
+      <Cylinder args={[0.08, 0.1, 0.5]} position={[-0.1, 0.25, 0]}>
+        <meshStandardMaterial color="#1A5A2A" />
       </Cylinder>
-      <Cylinder args={[0.1, 0.1, 0.7]} position={[0.15, 0, 0]}>
-        <meshStandardMaterial color="#2E4057" />
+      <Cylinder args={[0.08, 0.1, 0.5]} position={[0.1, 0.25, 0]}>
+        <meshStandardMaterial color="#1A5A2A" />
       </Cylinder>
     </group>
   );
