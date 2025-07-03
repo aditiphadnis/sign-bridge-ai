@@ -4,9 +4,8 @@
 
 @layer base {
   /**
-   * Tailwind CSS theme
-   * tailwind.config.ts expects the following color variables to be expressed as HSL values.
-   * A different format will require also updating the theme in tailwind.config.ts.
+   * Tailwind CSS theme for accessibility-focused sign language app
+   * Colors optimized for high contrast and visual accessibility
   */
   :root {
     --background: 0 0% 100%;
@@ -18,8 +17,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 214 100% 60%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -27,32 +26,51 @@
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 142 76% 36%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 214 100% 60%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
+
+    /* Accessibility-focused color palette */
+    --accessibility-50: 214 100% 97%;
+    --accessibility-100: 214 95% 93%;
+    --accessibility-200: 213 97% 87%;
+    --accessibility-300: 212 96% 78%;
+    --accessibility-400: 213 94% 68%;
+    --accessibility-500: 214 100% 60%;
+    --accessibility-600: 221 83% 53%;
+    --accessibility-700: 224 76% 48%;
+    --accessibility-800: 226 71% 40%;
+    --accessibility-900: 224 64% 33%;
+    --accessibility-950: 226 55% 20%;
+
+    /* Sign language theme colors */
+    --sign-50: 142 76% 96%;
+    --sign-100: 141 84% 93%;
+    --sign-200: 141 78% 85%;
+    --sign-300: 142 77% 73%;
+    --sign-400: 142 69% 58%;
+    --sign-500: 142 76% 36%;
+    --sign-600: 142 72% 29%;
+    --sign-700: 142 75% 24%;
+    --sign-800: 142 70% 19%;
+    --sign-900: 142 63% 16%;
+    --sign-950: 143 78% 9%;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -66,8 +84,8 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 214 100% 60%;
+    --primary-foreground: 222.2 84% 4.9%;
 
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
@@ -75,7 +93,7 @@
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 217.2 32.6% 17.5%;
+    --accent: 142 76% 36%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 30.6%;
@@ -83,7 +101,34 @@
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --ring: 214 100% 60%;
+
+    /* Dark mode accessibility colors */
+    --accessibility-50: 226 55% 20%;
+    --accessibility-100: 224 64% 33%;
+    --accessibility-200: 226 71% 40%;
+    --accessibility-300: 224 76% 48%;
+    --accessibility-400: 221 83% 53%;
+    --accessibility-500: 214 100% 60%;
+    --accessibility-600: 213 94% 68%;
+    --accessibility-700: 212 96% 78%;
+    --accessibility-800: 213 97% 87%;
+    --accessibility-900: 214 95% 93%;
+    --accessibility-950: 214 100% 97%;
+
+    /* Dark mode sign language colors */
+    --sign-50: 143 78% 9%;
+    --sign-100: 142 63% 16%;
+    --sign-200: 142 70% 19%;
+    --sign-300: 142 75% 24%;
+    --sign-400: 142 72% 29%;
+    --sign-500: 142 76% 36%;
+    --sign-600: 142 69% 58%;
+    --sign-700: 142 77% 73%;
+    --sign-800: 141 78% 85%;
+    --sign-900: 141 84% 93%;
+    --sign-950: 142 76% 96%;
+
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -102,5 +147,48 @@
 
   body {
     @apply bg-background text-foreground;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
+  }
+
+  /* Improve focus visibility for accessibility */
+  *:focus-visible {
+    @apply outline-2 outline-offset-2 outline-accessibility-500;
+  }
+
+  /* Custom scrollbar for better UX */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/30 rounded-md;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/50;
+  }
+}
+
+@layer components {
+  .gradient-bg {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--accessibility-50)) 0%,
+      hsl(var(--background)) 100%
+    );
+  }
+
+  .sign-gradient {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--sign-500)) 0%,
+      hsl(var(--sign-600)) 100%
+    );
   }
 }
