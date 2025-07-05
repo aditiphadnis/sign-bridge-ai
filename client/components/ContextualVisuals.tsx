@@ -458,3 +458,149 @@ export default function ContextualVisuals({
     </Card>
   );
 }
+
+// Video Card Component
+function VideoCard({
+  video,
+  isSelected,
+  onSelect,
+}: {
+  video: VideoContent;
+  isSelected: boolean;
+  onSelect: () => void;
+}) {
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const getVideoTypeColor = (type: string) => {
+    const colors: Record<string, string> = {
+      veo3: "bg-gradient-to-r from-blue-500 to-purple-600 text-white",
+      dalle: "bg-gradient-to-r from-green-500 to-teal-600 text-white",
+      contextual: "bg-gradient-to-r from-orange-500 to-red-600 text-white",
+    };
+    return colors[type] || "bg-gray-500 text-white";
+  };
+
+  return (
+    <div
+      className={cn(
+        "relative group cursor-pointer transition-all duration-200 rounded-lg border-2 overflow-hidden",
+        isSelected
+          ? "border-accessibility-500 shadow-glow"
+          : "border-gray-200 hover:border-accessibility-300",
+      )}
+      onClick={onSelect}
+    >
+      {/* Video thumbnail */}
+      <div className="aspect-video bg-gradient-to-br from-slate-900 to-black relative">
+        {video.isGenerating ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
+            <div className="relative mb-4">
+              <div className="h-12 w-12 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-blue-400 text-xs font-bold">
+                  {video.type === "veo3"
+                    ? "V3"
+                    : video.type.slice(0, 2).toUpperCase()}
+                </span>
+              </div>
+            </div>
+            <div className="text-center space-y-2">
+              <p className="text-sm font-medium">Generating...</p>
+              {video.progress && (
+                <div className="w-32 bg-gray-700 rounded-full h-1">
+                  <div
+                    className="bg-blue-500 h-1 rounded-full transition-all duration-300"
+                    style={{ width: `${video.progress}%` }}
+                  ></div>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Thumbnail placeholder */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 flex items-center justify-center">
+              <div className="text-center text-white space-y-2">
+                <div className="h-12 w-12 bg-white/20 rounded-full flex items-center justify-center mx-auto">
+                  {isPlaying ? (
+                    <Pause className="h-6 w-6" />
+                  ) : (
+                    <Play className="h-6 w-6" />
+                  )}
+                </div>
+                <p className="text-xs font-medium">Sign Language Video</p>
+              </div>
+            </div>
+
+            {/* Play overlay */}
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+              <div className="h-16 w-16 bg-white/90 rounded-full flex items-center justify-center">
+                <Play className="h-8 w-8 text-black ml-1" />
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Video type badge */}
+        <div className="absolute top-2 left-2">
+          <Badge
+            className={cn("text-xs font-bold", getVideoTypeColor(video.type))}
+          >
+            {video.type === "veo3" ? "VEO3" : video.type.toUpperCase()}
+          </Badge>
+        </div>
+
+        {/* Duration */}
+        <div className="absolute bottom-2 right-2">
+          <Badge
+            variant="secondary"
+            className="text-xs bg-black/70 text-white border-0"
+          >
+            {video.duration}
+          </Badge>
+        </div>
+
+        {/* Relevance indicator */}
+        <div className="absolute top-2 right-2">
+          <div
+            className={cn(
+              "h-3 w-3 rounded-full",
+              video.relevance >= 0.8
+                ? "bg-green-500"
+                : video.relevance >= 0.6
+                  ? "bg-yellow-500"
+                  : "bg-orange-500",
+            )}
+            title={`Relevance: ${Math.round(video.relevance * 100)}%`}
+          />
+        </div>
+      </div>
+
+      {/* Video info */}
+      <div className="p-3 space-y-2">
+        <div className="flex items-center justify-between">
+          <Badge
+            variant="secondary"
+            className={cn("text-xs", getCategoryColor(video.category))}
+          >
+            {video.category}
+          </Badge>
+        </div>
+        <p className="text-sm font-medium text-foreground line-clamp-2">
+          {video.description}
+        </p>
+      </div>
+    </div>
+  );
+
+  function getCategoryColor(category: string) {
+    const colors: Record<string, string> = {
+      Social: "bg-blue-100 text-blue-800",
+      "Daily Life": "bg-green-100 text-green-800",
+      Support: "bg-purple-100 text-purple-800",
+      General: "bg-gray-100 text-gray-800",
+      Context: "bg-orange-100 text-orange-800",
+    };
+    return colors[category] || "bg-gray-100 text-gray-800";
+  }
+}
