@@ -217,12 +217,12 @@ export default function ContextualVisuals({
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-accessibility-700">
             <Eye className="h-6 w-6" />
-            Contextual Visuals
+            Contextual Media
           </CardTitle>
           <div className="flex items-center gap-2">
             {text && (
               <Button
-                onClick={() => generateVisuals(text)}
+                onClick={() => generateContent(text)}
                 disabled={isGenerating}
                 variant="outline"
                 size="sm"
@@ -230,7 +230,7 @@ export default function ContextualVisuals({
                 <RefreshCw
                   className={cn("h-4 w-4 mr-1", isGenerating && "animate-spin")}
                 />
-                Regenerate
+                Regenerate All
               </Button>
             )}
           </div>
