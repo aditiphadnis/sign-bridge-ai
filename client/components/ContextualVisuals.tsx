@@ -187,9 +187,10 @@ export default function ContextualVisuals({
 
   useEffect(() => {
     if (text && text.length > 3) {
-      generateVisuals(text);
+      generateContent(text);
     } else {
       setVisuals([]);
+      setVideos([]);
     }
   }, [text]);
 
