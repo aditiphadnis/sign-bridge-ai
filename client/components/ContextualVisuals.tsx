@@ -56,54 +56,86 @@ export default function ContextualVisuals({
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("images");
 
-  // Mock visual generation based on text analysis
-  const generateVisuals = async (inputText: string) => {
+  // Generate both visuals and videos based on text analysis
+  const generateContent = async (inputText: string) => {
     setIsGenerating(true);
 
     // Simulate API call delay
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    // Mock generated visuals based on common words/contexts
-    const mockVisuals: Visual[] = [];
-
     // Analyze text for common concepts
     const words = inputText.toLowerCase().split(" ");
+    const mockVisuals: Visual[] = [];
+    const mockVideos: VideoContent[] = [];
 
     // Add contextual visuals based on detected concepts
     if (words.some((w) => ["hello", "hi", "greet"].includes(w))) {
       mockVisuals.push({
-        id: "greeting",
+        id: "greeting-img",
         type: "icon",
         url: "/api/placeholder/200/200",
         description: "Greeting gesture visualization",
         relevance: 0.9,
         category: "Social",
       });
+
+      mockVideos.push({
+        id: "greeting-video",
+        type: "veo3",
+        url: "https://example.com/greeting-sign.mp4",
+        thumbnail: "/api/placeholder/300/200",
+        description: "Sign language greeting demonstration",
+        duration: "0:08",
+        relevance: 0.95,
+        category: "Social",
+      });
     }
 
     if (words.some((w) => ["eat", "food", "hungry"].includes(w))) {
       mockVisuals.push({
-        id: "food",
+        id: "food-img",
         type: "image",
         url: "/api/placeholder/200/200",
         description: "Food and eating context",
         relevance: 0.85,
         category: "Daily Life",
       });
+
+      mockVideos.push({
+        id: "food-video",
+        type: "contextual",
+        url: "https://example.com/food-context.mp4",
+        thumbnail: "/api/placeholder/300/200",
+        description: "Food-related sign language gestures",
+        duration: "0:12",
+        relevance: 0.88,
+        category: "Daily Life",
+      });
     }
 
     if (words.some((w) => ["help", "assist", "support"].includes(w))) {
       mockVisuals.push({
-        id: "help",
+        id: "help-img",
         type: "diagram",
         url: "/api/placeholder/200/200",
         description: "Help and assistance concept",
         relevance: 0.8,
         category: "Support",
       });
+
+      mockVideos.push({
+        id: "help-video",
+        type: "veo3",
+        url: "https://example.com/help-sign.mp4",
+        thumbnail: "/api/placeholder/300/200",
+        description: "Help request in sign language",
+        duration: "0:10",
+        relevance: 0.92,
+        category: "Support",
+      });
     }
 
-    // Always include general concept visuals
+    // Always include general concept content
     mockVisuals.push(
       {
         id: "general1",
@@ -123,9 +155,34 @@ export default function ContextualVisuals({
       },
     );
 
+    // Always include general videos
+    mockVideos.push(
+      {
+        id: "general-video1",
+        type: "veo3",
+        url: "https://example.com/general-sign.mp4",
+        thumbnail: "/api/placeholder/300/200",
+        description: "General sign language interpretation",
+        duration: "0:15",
+        relevance: 0.8,
+        category: "General",
+      },
+      {
+        id: "context-video1",
+        type: "dalle",
+        url: "https://example.com/context-visual.mp4",
+        thumbnail: "/api/placeholder/300/200",
+        description: "Contextual visual explanation",
+        duration: "0:08",
+        relevance: 0.75,
+        category: "Context",
+      },
+    );
+
     setVisuals(mockVisuals);
+    setVideos(mockVideos);
     setIsGenerating(false);
-    onVisualsGenerated?.(mockVisuals);
+    onVisualsGenerated?.(mockVisuals, mockVideos);
   };
 
   useEffect(() => {
