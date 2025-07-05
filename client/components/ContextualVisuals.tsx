@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Image,
   Eye,
@@ -9,13 +10,16 @@ import {
   RefreshCw,
   Download,
   ExternalLink,
+  Video,
+  Play,
+  Pause,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ContextualVisualsProps {
   text?: string;
   isProcessing?: boolean;
-  onVisualsGenerated?: (visuals: Visual[]) => void;
+  onVisualsGenerated?: (visuals: Visual[], videos: VideoContent[]) => void;
 }
 
 interface Visual {
@@ -25,6 +29,19 @@ interface Visual {
   description: string;
   relevance: number;
   category: string;
+}
+
+interface VideoContent {
+  id: string;
+  type: "veo3" | "dalle" | "contextual";
+  url: string;
+  thumbnail: string;
+  description: string;
+  duration: string;
+  relevance: number;
+  category: string;
+  isGenerating?: boolean;
+  progress?: number;
 }
 
 export default function ContextualVisuals({
