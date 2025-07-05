@@ -50,8 +50,11 @@ export default function ContextualVisuals({
   onVisualsGenerated,
 }: ContextualVisualsProps) {
   const [visuals, setVisuals] = useState<Visual[]>([]);
+  const [videos, setVideos] = useState<VideoContent[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedVisual, setSelectedVisual] = useState<string | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState("images");
 
   // Mock visual generation based on text analysis
   const generateVisuals = async (inputText: string) => {
