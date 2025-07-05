@@ -239,13 +239,17 @@ export default function ContextualVisuals({
       <CardContent>
         {!text ? (
           <div className="text-center py-12 space-y-4">
-            <Image className="h-16 w-16 text-muted-foreground mx-auto" />
+            <div className="flex items-center justify-center gap-3">
+              <Image className="h-16 w-16 text-muted-foreground" />
+              <Video className="h-16 w-16 text-muted-foreground" />
+            </div>
             <div className="space-y-2">
               <p className="text-lg font-medium text-muted-foreground">
                 No input to visualize
               </p>
               <p className="text-sm text-muted-foreground">
-                Enter text or use voice input to generate contextual visuals
+                Enter text or use voice input to generate contextual images and
+                videos
               </p>
             </div>
           </div>
@@ -256,9 +260,9 @@ export default function ContextualVisuals({
               <div className="absolute inset-0 rounded-full border-4 border-accessibility-300 animate-ping" />
             </div>
             <div className="space-y-2">
-              <p className="text-lg font-medium">Generating visuals...</p>
+              <p className="text-lg font-medium">Generating media content...</p>
               <p className="text-sm text-muted-foreground">
-                Creating contextual images to enhance understanding
+                Creating contextual images and videos to enhance understanding
               </p>
             </div>
           </div>
@@ -273,106 +277,181 @@ export default function ContextualVisuals({
                 </span>
               </div>
               <p className="text-sm text-accessibility-700">
-                Generated {visuals.length} contextual visuals to help
-                understand: <span className="font-medium">"{text}"</span>
+                Generated {visuals.length} images and {videos.length} videos to
+                help understand: <span className="font-medium">"{text}"</span>
               </p>
             </div>
 
-            {/* Visual grid */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {visuals.map((visual) => (
-                <div
-                  key={visual.id}
-                  className={cn(
-                    "relative group cursor-pointer transition-all duration-200 rounded-lg border-2 overflow-hidden",
-                    selectedVisual === visual.id
-                      ? "border-accessibility-500 shadow-glow"
-                      : "border-gray-200 hover:border-accessibility-300",
-                  )}
-                  onClick={() =>
-                    setSelectedVisual(
-                      selectedVisual === visual.id ? null : visual.id,
-                    )
-                  }
-                >
-                  {/* Visual placeholder */}
-                  <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                    {visual.type === "image" && (
-                      <Image className="h-12 w-12 text-gray-400" />
-                    )}
-                    {visual.type === "icon" && (
-                      <div className="h-12 w-12 bg-accessibility-500 rounded-full flex items-center justify-center">
-                        <span className="text-white text-xl">🤝</span>
-                      </div>
-                    )}
-                    {visual.type === "diagram" && (
-                      <div className="space-y-2">
-                        <div className="h-3 w-16 bg-accessibility-300 rounded"></div>
-                        <div className="h-3 w-12 bg-accessibility-400 rounded"></div>
-                        <div className="h-3 w-20 bg-accessibility-500 rounded"></div>
-                      </div>
-                    )}
-                  </div>
+            {/* Tabs for Images and Videos */}
+            <Tabs
+              value={activeTab}
+              onValueChange={setActiveTab}
+              className="w-full"
+            >
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="images" className="flex items-center gap-2">
+                  <Image className="h-4 w-4" />
+                  Images ({visuals.length})
+                </TabsTrigger>
+                <TabsTrigger value="videos" className="flex items-center gap-2">
+                  <Video className="h-4 w-4" />
+                  Videos ({videos.length})
+                </TabsTrigger>
+              </TabsList>
 
-                  {/* Overlay info */}
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
-                    <ExternalLink className="h-6 w-6 text-white" />
-                  </div>
-
-                  {/* Relevance indicator */}
-                  <div className="absolute top-2 right-2">
+              {/* Images Tab */}
+              <TabsContent value="images" className="space-y-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {visuals.map((visual) => (
                     <div
+                      key={visual.id}
                       className={cn(
-                        "h-3 w-3 rounded-full",
-                        getRelevanceColor(visual.relevance),
+                        "relative group cursor-pointer transition-all duration-200 rounded-lg border-2 overflow-hidden",
+                        selectedVisual === visual.id
+                          ? "border-accessibility-500 shadow-glow"
+                          : "border-gray-200 hover:border-accessibility-300",
                       )}
-                      title={`Relevance: ${Math.round(visual.relevance * 100)}%`}
-                    />
-                  </div>
-
-                  {/* Category badge */}
-                  <div className="absolute bottom-2 left-2">
-                    <Badge
-                      variant="secondary"
-                      className={cn(
-                        "text-xs",
-                        getCategoryColor(visual.category),
-                      )}
+                      onClick={() =>
+                        setSelectedVisual(
+                          selectedVisual === visual.id ? null : visual.id,
+                        )
+                      }
                     >
-                      {visual.category}
-                    </Badge>
-                  </div>
-                </div>
-              ))}
-            </div>
+                      {/* Visual placeholder */}
+                      <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                        {visual.type === "image" && (
+                          <Image className="h-12 w-12 text-gray-400" />
+                        )}
+                        {visual.type === "icon" && (
+                          <div className="h-12 w-12 bg-accessibility-500 rounded-full flex items-center justify-center">
+                            <span className="text-white text-xl">🤝</span>
+                          </div>
+                        )}
+                        {visual.type === "diagram" && (
+                          <div className="space-y-2">
+                            <div className="h-3 w-16 bg-accessibility-300 rounded"></div>
+                            <div className="h-3 w-12 bg-accessibility-400 rounded"></div>
+                            <div className="h-3 w-20 bg-accessibility-500 rounded"></div>
+                          </div>
+                        )}
+                      </div>
 
-            {/* Selected visual details */}
-            {selectedVisual && (
-              <div className="p-4 bg-card border rounded-lg space-y-3">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-medium">Visual Details</h4>
-                  <Button variant="ghost" size="sm">
-                    <Download className="h-4 w-4 mr-1" />
-                    Download
-                  </Button>
-                </div>
-                {(() => {
-                  const visual = visuals.find((v) => v.id === selectedVisual);
-                  return visual ? (
-                    <div className="space-y-2">
-                      <p className="text-sm">{visual.description}</p>
-                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                        <span>Type: {visual.type}</span>
-                        <span>
-                          Relevance: {Math.round(visual.relevance * 100)}%
-                        </span>
-                        <span>Category: {visual.category}</span>
+                      {/* Overlay info */}
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                        <ExternalLink className="h-6 w-6 text-white" />
+                      </div>
+
+                      {/* Relevance indicator */}
+                      <div className="absolute top-2 right-2">
+                        <div
+                          className={cn(
+                            "h-3 w-3 rounded-full",
+                            getRelevanceColor(visual.relevance),
+                          )}
+                          title={`Relevance: ${Math.round(visual.relevance * 100)}%`}
+                        />
+                      </div>
+
+                      {/* Category badge */}
+                      <div className="absolute bottom-2 left-2">
+                        <Badge
+                          variant="secondary"
+                          className={cn(
+                            "text-xs",
+                            getCategoryColor(visual.category),
+                          )}
+                        >
+                          {visual.category}
+                        </Badge>
                       </div>
                     </div>
-                  ) : null;
-                })()}
-              </div>
-            )}
+                  ))}
+                </div>
+
+                {/* Selected visual details */}
+                {selectedVisual && (
+                  <div className="p-4 bg-card border rounded-lg space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-medium">Image Details</h4>
+                      <Button variant="ghost" size="sm">
+                        <Download className="h-4 w-4 mr-1" />
+                        Download
+                      </Button>
+                    </div>
+                    {(() => {
+                      const visual = visuals.find(
+                        (v) => v.id === selectedVisual,
+                      );
+                      return visual ? (
+                        <div className="space-y-2">
+                          <p className="text-sm">{visual.description}</p>
+                          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                            <span>Type: {visual.type}</span>
+                            <span>
+                              Relevance: {Math.round(visual.relevance * 100)}%
+                            </span>
+                            <span>Category: {visual.category}</span>
+                          </div>
+                        </div>
+                      ) : null;
+                    })()}
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* Videos Tab */}
+              <TabsContent value="videos" className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {videos.map((video) => (
+                    <VideoCard
+                      key={video.id}
+                      video={video}
+                      isSelected={selectedVideo === video.id}
+                      onSelect={() =>
+                        setSelectedVideo(
+                          selectedVideo === video.id ? null : video.id,
+                        )
+                      }
+                    />
+                  ))}
+                </div>
+
+                {/* Selected video details */}
+                {selectedVideo && (
+                  <div className="p-4 bg-card border rounded-lg space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-medium">Video Details</h4>
+                      <div className="flex gap-2">
+                        <Button variant="ghost" size="sm">
+                          <Play className="h-4 w-4 mr-1" />
+                          Play
+                        </Button>
+                        <Button variant="ghost" size="sm">
+                          <Download className="h-4 w-4 mr-1" />
+                          Download
+                        </Button>
+                      </div>
+                    </div>
+                    {(() => {
+                      const video = videos.find((v) => v.id === selectedVideo);
+                      return video ? (
+                        <div className="space-y-2">
+                          <p className="text-sm">{video.description}</p>
+                          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                            <span>Type: {video.type.toUpperCase()}</span>
+                            <span>Duration: {video.duration}</span>
+                            <span>
+                              Relevance: {Math.round(video.relevance * 100)}%
+                            </span>
+                            <span>Category: {video.category}</span>
+                          </div>
+                        </div>
+                      ) : null;
+                    })()}
+                  </div>
+                )}
+              </TabsContent>
+            </Tabs>
           </div>
         )}
       </CardContent>
