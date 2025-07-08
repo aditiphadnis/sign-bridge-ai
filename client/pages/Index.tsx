@@ -165,6 +165,7 @@ export default function Index() {
             <VoiceInput
               onTextSubmit={handleTextSubmit}
               onVoiceInput={handleVoiceInput}
+              onVideoInput={handleVideoInput}
               isProcessing={isProcessing}
             />
 
