@@ -41,6 +41,7 @@ interface VideoInputData {
 export default function VoiceInput({
   onTextSubmit,
   onVoiceInput,
+  onVideoInput,
   isProcessing = false,
 }: VoiceInputProps) {
   const [text, setText] = useState("");
@@ -50,10 +51,23 @@ export default function VoiceInput({
   const [volume, setVolume] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
 
+  // Video input states
+  const [isRecording, setIsRecording] = useState(false);
+  const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
+  const [recordedVideo, setRecordedVideo] = useState<string | null>(null);
+  const [uploadedVideo, setUploadedVideo] = useState<string | null>(null);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [videoProcessing, setVideoProcessing] = useState(false);
+  const [recordingDuration, setRecordingDuration] = useState(0);
+
   const recognitionRef = useRef<any>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const animationRef = useRef<number>();
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const recordingTimerRef = useRef<number>();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     // Check if speech recognition is supported
