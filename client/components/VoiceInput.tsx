@@ -317,14 +317,18 @@ export default function VoiceInput({
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="voice" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="voice" className="flex items-center gap-2">
               <Mic className="h-4 w-4" />
-              Voice Input
+              Voice
             </TabsTrigger>
             <TabsTrigger value="text" className="flex items-center gap-2">
               <Type className="h-4 w-4" />
-              Text Input
+              Text
+            </TabsTrigger>
+            <TabsTrigger value="video" className="flex items-center gap-2">
+              <Video className="h-4 w-4" />
+              Video
             </TabsTrigger>
           </TabsList>
 
