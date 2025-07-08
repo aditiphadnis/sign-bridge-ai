@@ -181,6 +181,132 @@ export default function VoiceInput({
     }
   };
 
+  // Video recording functions
+  const startVideoRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
+      setVideoStream(stream);
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.play();
+      }
+
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+
+      const chunks: BlobPart[] = [];
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          chunks.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(chunks, { type: "video/webm" });
+        const url = URL.createObjectURL(blob);
+        setRecordedVideo(url);
+
+        // Send video data
+        onVideoInput({
+          blob,
+          url,
+          duration: recordingDuration,
+          type: "record",
+        });
+
+        // Stop camera stream
+        stream.getTracks().forEach((track) => track.stop());
+        setVideoStream(null);
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+      setRecordingDuration(0);
+
+      // Start recording timer
+      recordingTimerRef.current = window.setInterval(() => {
+        setRecordingDuration((prev) => prev + 1);
+      }, 1000);
+    } catch (error) {
+      console.error("Error starting video recording:", error);
+    }
+  };
+
+  const stopVideoRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+
+      if (recordingTimerRef.current) {
+        clearInterval(recordingTimerRef.current);
+      }
+    }
+  };
+
+  const handleVideoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && file.type.startsWith("video/")) {
+      const url = URL.createObjectURL(file);
+      setUploadedVideo(url);
+
+      // Get video duration
+      const video = document.createElement("video");
+      video.src = url;
+      video.onloadedmetadata = () => {
+        onVideoInput({
+          file,
+          url,
+          duration: video.duration,
+          type: "upload",
+        });
+      };
+    }
+  };
+
+  const resetVideo = () => {
+    setRecordedVideo(null);
+    setUploadedVideo(null);
+    setIsVideoPlaying(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const processVideo = async () => {
+    const videoUrl = recordedVideo || uploadedVideo;
+    if (!videoUrl) return;
+
+    setVideoProcessing(true);
+
+    // Simulate video processing for sign language recognition
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+
+    // Mock extracted text from video
+    const mockTranscriptions = [
+      "Hello, nice to meet you",
+      "Thank you for your help",
+      "How are you today?",
+      "I need assistance please",
+      "Have a wonderful day",
+    ];
+
+    const extractedText =
+      mockTranscriptions[Math.floor(Math.random() * mockTranscriptions.length)];
+    onVoiceInput(extractedText);
+
+    setVideoProcessing(false);
+  };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
+
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
