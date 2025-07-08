@@ -3,13 +3,39 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mic, MicOff, Type, Send, Volume2, VolumeX } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import {
+  Mic,
+  MicOff,
+  Type,
+  Send,
+  Volume2,
+  VolumeX,
+  Video,
+  VideoOff,
+  Upload,
+  Play,
+  Pause,
+  RotateCcw,
+  FileVideo,
+  Camera,
+  Square,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface VoiceInputProps {
   onTextSubmit: (text: string) => void;
   onVoiceInput: (text: string) => void;
+  onVideoInput: (videoData: VideoInputData) => void;
   isProcessing?: boolean;
+}
+
+interface VideoInputData {
+  file?: File;
+  blob?: Blob;
+  url: string;
+  duration: number;
+  type: "upload" | "record";
 }
 
 export default function VoiceInput({
