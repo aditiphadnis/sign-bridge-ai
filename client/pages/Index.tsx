@@ -61,6 +61,11 @@ export default function Index() {
     }
   };
 
+  const handleVideoInput = (videoData: any) => {
+    console.log("Video input received:", videoData);
+    // Video processing will trigger handleVoiceInput when complete
+  };
+
   const handleAvatarAnimationComplete = () => {
     setIsAvatarAnimating(false);
   };
