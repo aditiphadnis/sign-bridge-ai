@@ -416,6 +416,181 @@ export default function VoiceInput({
               </div>
             </div>
           </TabsContent>
+
+          <TabsContent value="video" className="space-y-4">
+            <div className="space-y-6">
+              {/* Video Display Area */}
+              <div className="relative aspect-video bg-black rounded-lg overflow-hidden border-2 border-dashed border-gray-300">
+                {videoStream || recordedVideo || uploadedVideo ? (
+                  <video
+                    ref={videoRef}
+                    className="w-full h-full object-cover"
+                    src={recordedVideo || uploadedVideo || undefined}
+                    controls={!isRecording && (recordedVideo || uploadedVideo)}
+                    muted={isRecording}
+                    autoPlay={isRecording}
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center space-y-4">
+                      <Video className="h-16 w-16 text-gray-400 mx-auto" />
+                      <div className="space-y-2">
+                        <p className="text-lg font-medium text-gray-600">
+                          No video input
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          Record a video or upload a file to get started
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Recording indicator */}
+                {isRecording && (
+                  <div className="absolute top-4 left-4 flex items-center gap-2 bg-red-500 text-white px-3 py-1 rounded-full">
+                    <div className="h-2 w-2 bg-white rounded-full animate-pulse" />
+                    <span className="text-sm font-medium">
+                      REC {formatTime(recordingDuration)}
+                    </span>
+                  </div>
+                )}
+
+                {/* Video processing overlay */}
+                {videoProcessing && (
+                  <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
+                    <div className="text-center text-white space-y-4">
+                      <div className="h-12 w-12 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mx-auto" />
+                      <div className="space-y-2">
+                        <p className="font-medium">Processing Video...</p>
+                        <p className="text-sm opacity-80">
+                          Analyzing sign language gestures
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Video Controls */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Recording Controls */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Camera className="h-4 w-4" />
+                    <span className="font-medium">Record Video</span>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={
+                        isRecording ? stopVideoRecording : startVideoRecording
+                      }
+                      disabled={isProcessing || videoProcessing}
+                      variant={isRecording ? "destructive" : "default"}
+                      className={cn("flex-1", isRecording && "animate-pulse")}
+                    >
+                      {isRecording ? (
+                        <>
+                          <Square className="h-4 w-4 mr-2" />
+                          Stop Recording
+                        </>
+                      ) : (
+                        <>
+                          <Video className="h-4 w-4 mr-2" />
+                          Start Recording
+                        </>
+                      )}
+                    </Button>
+
+                    {(recordedVideo || uploadedVideo) && (
+                      <Button
+                        onClick={resetVideo}
+                        variant="outline"
+                        size="icon"
+                      >
+                        <RotateCcw className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Upload Controls */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <FileVideo className="h-4 w-4" />
+                    <span className="font-medium">Upload Video</span>
+                  </div>
+
+                  <div className="space-y-2">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="video/*"
+                      onChange={handleVideoUpload}
+                      className="hidden"
+                    />
+                    <Button
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isProcessing || isRecording || videoProcessing}
+                      variant="outline"
+                      className="w-full"
+                    >
+                      <Upload className="h-4 w-4 mr-2" />
+                      Choose Video File
+                    </Button>
+
+                    <p className="text-xs text-muted-foreground text-center">
+                      Supports MP4, WebM, MOV files
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Process Video Button */}
+              {(recordedVideo || uploadedVideo) && (
+                <div className="flex justify-center">
+                  <Button
+                    onClick={processVideo}
+                    disabled={videoProcessing || isProcessing}
+                    size="lg"
+                    className="bg-accessibility-500 hover:bg-accessibility-600"
+                  >
+                    {videoProcessing ? (
+                      <>
+                        <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        <Play className="h-4 w-4 mr-2" />
+                        Analyze Sign Language
+                      </>
+                    )}
+                  </Button>
+                </div>
+              )}
+
+              {/* Video Info */}
+              {(recordedVideo || uploadedVideo) && !videoProcessing && (
+                <div className="p-3 bg-accessibility-50 rounded-lg border border-accessibility-200">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge variant="secondary" className="text-xs">
+                      {recordedVideo ? "Recorded" : "Uploaded"}
+                    </Badge>
+                    <Badge variant="outline" className="text-xs">
+                      Ready to Process
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-accessibility-700">
+                    Video is ready for sign language analysis. Click "Analyze
+                    Sign Language" to extract text and convert to sign language
+                    demonstration.
+                  </p>
+                </div>
+              )}
+            </div>
+          </TabsContent>
         </Tabs>
       </CardContent>
     </Card>
